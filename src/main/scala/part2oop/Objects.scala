@@ -5,6 +5,7 @@ object Objects {
   // SCALA DOES NOT HAVE CLASS-LEVEL FUNCTIONALITY ("static")
   object Person { // type + its only instance
     // "static"/"class" - level functionality
+    // OBJECTS ARE SINGLETON
     val N_EYES = 2
     def canFly: Boolean = false
 

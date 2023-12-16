@@ -100,9 +100,9 @@ object ListTest extends App {
   // println(listOfStrings.toString) // [Hello Scala]
 
   // anonymous class
-  println(listOfIntegers.map(new Function1[Int, Int] {
-    override def apply(elem: Int): Int = elem * 2
-  }).toString) // [2 4 6]
+  println(listOfIntegers.map(elem => elem * 2).toString) // [2 4 6]
+  // println(listOfIntegers.map(_ * 2).toString) // [2 4 6]
+  
   /* explanation
   [1,2,3].map(n * 2)
     = new Cons(2, [2,3].map(n * 2))
@@ -111,9 +111,9 @@ object ListTest extends App {
     = new Cons(2, new Cons(4, new Cons(6, Empty))))
   */
 
-  println(listOfIntegers.filter(new Function1[Int, Boolean] {
-    override def apply(elem: Int): Boolean = elem % 2 == 0
-  }).toString) // [2]
+  println(listOfIntegers.filter(elem => elem % 2 == 0).toString) // [2]
+  // println(listOfIntegers.filter(_ % 2 == 0).toString) // [2]
+
   /* explanation
   [1,2,3].filter(n % 2 == 0)
     = [2,3].filter(n % 2 == 0)
@@ -123,10 +123,7 @@ object ListTest extends App {
   */
 
   println((listOfIntegers ++ anotherListOfIntegers).toString) // [1 2 3 4 5]
-  println(listOfIntegers.flatMap(new Function1[Int, MyList[Int]] {
-    override def apply(elem: Int): MyList[Int] =
-      new Cons(elem, new Cons(elem + 1, Empty))
-  }).toString) // [1 2 2 3 3 4]
+  println(listOfIntegers.flatMap(elem => Cons(elem, new Cons(elem + 1, Empty))).toString) // [1 2 2 3 3 4]
 
   println(clonelistOfIntegers == listOfIntegers) // true
 }

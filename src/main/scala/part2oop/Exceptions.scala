@@ -54,7 +54,7 @@ object Exceptions extends App {
   */
 
   // 1. OutOfMemoryError
-  val array = Array.ofDim(Int.MaxValue)
+  // val array = Array.ofDim(Int.MaxValue)
 
   // 2. Stack Overflow Error
   def infinite: Int = 1 + infinite

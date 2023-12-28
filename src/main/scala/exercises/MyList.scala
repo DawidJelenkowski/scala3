@@ -26,6 +26,13 @@ abstract class MyList[+A] {
 
   // concatenation
   def ++[B >: A](list: MyList[B]): MyList[B]
+
+  // hofs
+  def foreach(f: A => Unit): Unit
+  def sort(compare: (A, A) => Int): MyList[A] // if the first is less than second it will return a negative value
+  def zipWith[B, C](list: MyList[B], zip:(A, B) => C): MyList[C] // takes my list of type B
+  // zips list of type A and B into type C
+  def fold[B](start: B)(operator: (B, A) => B): B
 }
 
 case object Empty extends MyList[Nothing] {
@@ -40,6 +47,14 @@ case object Empty extends MyList[Nothing] {
   def filter(predicate: Nothing => Boolean): MyList[Nothing] = Empty
 
   def ++[B >: Nothing](list: MyList[B]): MyList[B] = list
+
+  // hofs
+  def foreach(f: Nothing => Unit): Unit = () // The parenthesis is an Unit value
+  def sort(compare: (Nothing, Nothing) => Int) = Empty
+  def zipWith[B, C](list: MyList[B], zip: (Nothing, B) => C): MyList[C] =
+    if (!list.isEmpty) throw new RuntimeException("List do not have the same length")
+    else Empty
+  def fold[B](start: B)(operator: (B, Nothing) => B): B = start
 }
 
 case class Cons[+A](h: A, t: MyList[A]) extends MyList[A] {
@@ -63,7 +78,7 @@ case class Cons[+A](h: A, t: MyList[A]) extends MyList[A] {
 
 
   def ++[B >: A](list: MyList[B]): MyList[B] = new Cons(h, t ++ list)
-  /*
+  /* explanation
     [1,2] ++ [3,4,5]
     = new Cons(1, [2] ++ [3,4,5])
     = new Cons(1, new Cons(2, Empty ++ [3,4,5]))
@@ -73,12 +88,42 @@ case class Cons[+A](h: A, t: MyList[A]) extends MyList[A] {
   def flatMap[B](transformer: A => MyList[B]): MyList[B] = 
     transformer(h) ++ t.flatMap(transformer)
 
-  /*
+  /* explanation
     [1,2].flatMap(n => [n, n+1])
     = [1,2] ++ [2].flatMap(n => [n, n+1])
     = [1,2] ++ [2,3] ++ Empty.flatMap(n => [n, n+1])
     = [1,2] ++ [2,3] ++ Empty
     = [1,2,2,3]
+  */
+
+  def foreach(f: A => Unit): Unit = {
+    f(h)
+    t.foreach(f)
+  }
+
+  def sort(compare: (A, A) => Int): MyList[A] = {
+    def insert(x: A, sortedList: MyList[A]): MyList[A] = 
+      if (sortedList.isEmpty) new Cons(x, Empty) // if sortedList is empty it wil return the last element
+      else if (compare(x, sortedList.head) <= 0) new Cons(x, sortedList) // instead of x <= 0 the compare is used
+      // if x is smaller than already the smallest element of the list =, then it becomes the new smallest element
+      else new Cons(sortedList.head, insert(x, sortedList.tail))
+      // otherwise the head is the new smalles element
+    val sortedTail = t.sort(compare)
+    insert(h, sortedTail) // insertion of a value in an already sorted list
+  }
+
+  def zipWith[B, C](list: MyList[B], zip: (A, B) => C): MyList[C] = 
+    if (list.isEmpty) throw new RuntimeException("Lists do not have the same length")
+    else new Cons(zip(h, list.head), t.zipWith(list.tail, zip))
+  
+  def fold[B](start: B)(operator: (B, A) => B): B =
+    t.fold(operator(start, h))(operator)
+  /* explanation
+    [1,2,3].fold(0) (+) =
+    = [2,3].fold(1) (+) =
+    = [3].fold(3) (+) =
+    = [].fold(6) (+) =
+    = 6
   */
 }
 
@@ -126,6 +171,12 @@ object ListTest extends App {
   println(listOfIntegers.flatMap(elem => Cons(elem, new Cons(elem + 1, Empty))).toString) // [1 2 2 3 3 4]
 
   println(clonelistOfIntegers == listOfIntegers) // true
+
+  listOfIntegers.foreach(println) // 1 2 3
+  println(listOfIntegers.sort((x, y) => y - x)) // [3 2 1]
+  println(anotherListOfIntegers.zipWith[String, String](listOfStrings, _ + "-" + _)) // [4-Hello 5-Scala]
+
+  println(listOfIntegers.fold(0)(_ + _)) // 6
 }
 
 /*

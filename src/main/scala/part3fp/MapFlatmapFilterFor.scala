@@ -34,8 +34,45 @@ object MapFlatmapFilterFor extends App{
   
   // tripple loop
   // "iterations"
-  val combinations = numbers.flatMap(n => chars.flatMap(c => colors.map(color => "" + c + n + "-" + color)))
+  val combinations = numbers.filter(_ % 2 == 0).flatMap(n => chars.flatMap(c => colors.map(color => "" + c + n + "-" + color)))
   println(combinations)
 
+  // foreach
   list.foreach(println)
+
+  // for-compregensions
+  val forCombinations = for {
+    n <- numbers if n % 2 == 0 // filters for numbers only divisible by 2
+    c <- chars
+    color <- colors
+  } yield "" + c + n + "-" + color
+  println(forCombinations)
+  
+  for {
+    n <- numbers
+  } println(n)
+
+  // syntax overload
+  println(list.map ( x =>
+    x * 2
+  ))
+
+  /* explanation
+  [1,2,3].map(n * 2)
+    = new Cons(2, [2,3].map(n * 2))
+    = new Cons(2, new Cons(4, [3].map(n * 2)))
+    = new Cons(2, new Cons(4, new Cons(6, Empty.map(n * 2))))
+    = new Cons(2, new Cons(4, new Cons(6, Empty))))
+  */
+
+  /* tasks
+    1. MyList supports for comprehensions?
+      map(f: A => B) => MyList[B]
+      filter(p: A => Boolean) => MyList[A]
+      flatMap(f: A => MyList[B]) => MyList[B]
+    2. A small collection of at most ONE element - Maybe[+T]
+      - map, flatMap, filter
+    */
+  
+  
 }

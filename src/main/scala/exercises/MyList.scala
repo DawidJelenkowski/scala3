@@ -177,9 +177,16 @@ object ListTest extends App {
   println(anotherListOfIntegers.zipWith[String, String](listOfStrings, _ + "-" + _)) // [4-Hello 5-Scala]
 
   println(listOfIntegers.fold(0)(_ + _)) // 6
+
+  // for comprehensions
+  val combinations = for {
+    n <- listOfIntegers
+    string <- listOfStrings
+  } yield n + "-" + string
+  println(combinations) // [1-Hello 1-Scala 2-Hello 2-Scala 3-Hello 3-Scala]
 }
 
-/*
+/* tasks
   1. Generic trait MyPredicate[-T] with a little method test(T) => Boolean
   2. Generic trait MyTransformer[-A, B] with a method transform(A) => B
   3. MyList:

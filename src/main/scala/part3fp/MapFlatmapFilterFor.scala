@@ -40,7 +40,7 @@ object MapFlatmapFilterFor extends App{
   // foreach
   list.foreach(println)
 
-  // for-compregensions
+  // for-comprehensions
   val forCombinations = for {
     n <- numbers if n % 2 == 0 // filters for numbers only divisible by 2
     c <- chars
